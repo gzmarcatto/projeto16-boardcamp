@@ -1,5 +1,4 @@
 import { gamesSchema } from "../schemas/games.schema.js";
-import { db } from "../database/database.connection.js";
 
 export async function validateSchemaGames(req, res, next) {
   const game = req.body;
