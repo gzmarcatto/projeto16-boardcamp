@@ -34,9 +34,9 @@ export async function getCustomers(req, res) {
 export async function getCustomerById(req, res) {
   try {
     const { id } = req.params;
-    const customer = await db.query("SELECT * FROM customers WHERE id=$1", [id]);
-    if (customer.rowCount === 0) return res.sendStatus(400);
-    const results = customer.rows;
+    const existsCustomer = await db.query("SELECT * FROM customers WHERE id=$1", [id]);
+    if (existsCustomer.rowCount === 0) return res.sendStatus(404);
+    const results = existsCustomer.rows;
     return res.status(200).send(results);
   } catch (error) {
     console.log(error);
@@ -49,11 +49,15 @@ export async function updateCustomer(req, res) {
     const { id } = req.params;
     const { name, phone, cpf, birthday } = req.body;
 
+    const existsCustomer = await db.query("SELECT * FROM customers WHERE id=$1", [id]);
+    if (existsCustomer.rowCount === 0) return res.sendStatus(404);
+
     const existsCustomerCPF = await db.query("SELECT * FROM customers WHERE id!=$1 AND cpf=$2", [
       id,
       cpf,
     ]);
     if (existsCustomerCPF.rowCount !== 0) return res.sendStatus(409);
+
     await db.query(`UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5;`, [
       name,
       phone,
