@@ -6,5 +6,7 @@ const customersRouter = Router();
 
 customersRouter.post(`/customers`, validateSchemaCustomers, customersController.postCustomers);
 customersRouter.get(`/customers`, customersController.getCustomers);
+customersRouter.get('/customers/:id', customersController.getCustomerById)
+customersRouter.put('/customers/:id', validateSchemaCustomers, customersController.updateCustomer)
 
 export default customersRouter;
