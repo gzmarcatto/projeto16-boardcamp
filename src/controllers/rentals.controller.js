@@ -1,29 +1,38 @@
 import { db } from "../database/database.connection.js";
+import dayjs from "dayjs";
 
-export async function getRentals(req, res) {
+export async function postRentals(req, res) {
   try {
-    const rental = await db.query(`SELECT rentals.*, customers.id, customers.name, games.id, games.name
-    FROM rentals
-    JOIN games
-      ON rentals."gameId" = games.id
-    JOIN customers
-      ON rentals."customerId" = customers.id
-    `)
-    return res.sendStatus(200);
+    const rent = req.body;
+    const gameRented = await db.query("SELECT * FROM games WHERE id=$1", [rent.gameId]);
+    const pricePerDay = gameRented.rows[0].pricePerDay;
+    const rentPrice = rent.daysRented * pricePerDay;
+    const rentDate = dayjs().format("YYYY-MM-DD");
+    await db.query(
+      `INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee") 
+      VALUES ($1, $2, $3, $4, null, $5, null);`,
+      [rent.customerId, rent.gameId, rentDate, rent.daysRented, rentPrice]
+    );
+    res.sendStatus(201);
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error.message);
+    return res.sendStatus(500);
   }
 }
 
-// export async function getCustomers(req, res) {
+// export async function getRentals(req, res) {
 //   try {
-//     const customers = await db.query("SELECT * FROM customers");
-//     const results = customers.rows;
-//     return res.status(200).send(results);
+//     const rental = await db.query(`SELECT rentals.*, customers.id, customers.name, games.id, games.name
+//     FROM rentals
+//     JOIN games
+//       ON rentals."gameId" = games.id
+//     JOIN customers
+//       ON rentals."customerId" = customers.id
+//     `)
+//     return res.sendStatus(200);
 //   } catch (error) {
 //     console.log(error);
-//     return res.sendStatus(500);
+//     return res.status(500).send(error.message);
 //   }
 // }
 
