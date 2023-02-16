@@ -20,21 +20,23 @@ export async function postRentals(req, res) {
   }
 }
 
-// export async function getRentals(req, res) {
-//   try {
-//     const rental = await db.query(`SELECT rentals.*, customers.id, customers.name, games.id, games.name
-//     FROM rentals
-//     JOIN games
-//       ON rentals."gameId" = games.id
-//     JOIN customers
-//       ON rentals."customerId" = customers.id
-//     `)
-//     return res.sendStatus(200);
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send(error.message);
-//   }
-// }
+export async function getRentals(req, res) {
+  try {
+    const rentals = await db.query(`SELECT rentals.*, customers.id, customers.name, games.id, games.name
+    FROM rentals
+    JOIN games
+      ON rentals."gameId" = games.id
+    JOIN customers
+      ON rentals."customerId" = customers.id
+    `)
+    console.log (rentals)
+    //Pendente implementar lógica de retorno do rent
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error.message);
+  }
+}
 
 // export async function getCustomerById(req, res) {
 //   try {
