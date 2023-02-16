@@ -36,7 +36,7 @@ export async function getCustomerById(req, res) {
     const { id } = req.params;
     const existsCustomer = await db.query("SELECT * FROM customers WHERE id=$1", [id]);
     if (existsCustomer.rowCount === 0) return res.sendStatus(404);
-    const results = existsCustomer.rows;
+    const results = existsCustomer.rows[0];
     return res.status(200).send(results);
   } catch (error) {
     console.log(error);
